@@ -1,6 +1,6 @@
 {
   "name": "create-dotbep-runtime",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a dotbep runtime project",
   "type": "module",
   "bin": {
