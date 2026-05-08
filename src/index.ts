@@ -9,8 +9,17 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname   = dirname(fileURLToPath(import.meta.url))
 const templateDir = join(__dirname, '..', 'templates')
+const isInteractive = process.stdin.isTTY
 
 async function main() {
+  if (isInteractive) {
+    await interactiveMode()
+  } else {
+    await silentMode()
+  }
+}
+
+async function interactiveMode() {
   p.intro('create-dotbep-runtime')
 
   const useCurrentDir = await p.confirm({
@@ -45,9 +54,7 @@ async function main() {
 
   const s = p.spinner()
   s.start('Scaffolding project...')
-  copyDir(templateDir, outDir)
-  const tmp = join(outDir, '_gitignore')
-  if (existsSync(tmp)) renameSync(tmp, join(outDir, '.gitignore'))
+  scaffold(outDir)
   s.stop(`Project "${projectName}" created.`)
 
   p.note(
@@ -72,6 +79,25 @@ async function main() {
     `  npm install\n` +
     `  npm run pull`,
   )
+}
+
+async function silentMode() {
+  const outDir      = resolve('.')
+  const projectName = basename(outDir)
+  scaffold(outDir)
+  console.log(`create-dotbep-runtime: scaffolded "${projectName}"`)
+  console.log('Next steps:')
+  console.log('  mv AGENTS.md CLAUDE.md        # or whichever applies')
+  console.log('  cp .env.example .env')
+  console.log('  # Edit .env with DOTBEP_TOKEN and DOTBEP_BEP_ID')
+  console.log('  npm install')
+  console.log('  npm run pull')
+}
+
+function scaffold(outDir: string): void {
+  copyDir(templateDir, outDir)
+  const tmp = join(outDir, '_gitignore')
+  if (existsSync(tmp)) renameSync(tmp, join(outDir, '.gitignore'))
 }
 
 function copyDir(src: string, dest: string): void {
