@@ -6,9 +6,29 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root      = join(__dirname, '..')
 
-// Verify the bundle exists before attempting anything
-await readFile(join(root, 'dist', 'lenses.js'))
+const token  = process.env['DOTBEP_TOKEN']
+const bepId  = process.env['DOTBEP_BEP_ID']
+const apiUrl = process.env['DOTBEP_API_URL'] ?? 'https://app.dotbep.com/api'
 
-// TODO: upload dist/lenses.js once the platform supports it.
-// For now, upload the file manually from the platform UI.
-console.log('Lenses deploy: upload dist/lenses.js manually from the platform.')
+if (!token) throw new Error('DOTBEP_TOKEN is not set in .env')
+if (!bepId) throw new Error('DOTBEP_BEP_ID is not set in .env')
+
+const bundle = await readFile(join(root, 'dist', 'lenses.js'))
+
+console.log(`Deploying lenses to BEP ${bepId}...`)
+
+const form = new FormData()
+form.append('file', new Blob([bundle], { type: 'application/javascript' }), 'lenses.js')
+
+const res = await fetch(`${apiUrl}/beps/${bepId}/lenses`, {
+  method:  'POST',
+  headers: { Authorization: `Bearer ${token}` },
+  body:    form,
+})
+
+if (!res.ok) {
+  const err = await res.json().catch(() => ({})) as Record<string, unknown>
+  throw new Error((err['error'] as string | undefined) ?? res.statusText)
+}
+
+console.log('Lenses deployed.')
