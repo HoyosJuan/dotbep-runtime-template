@@ -13,13 +13,8 @@ export interface BepResolvers {
   'hello-resolver': (url: string) => unknown
 }
 
-export interface BepAdapters {
-  'hello-adapter': (data: unknown) => unknown
-}
-
 export interface BepTypes {
   effects:     BepEffects
   automations: BepAutomations
   resolvers:   BepResolvers
-  adapters:    BepAdapters
 }
