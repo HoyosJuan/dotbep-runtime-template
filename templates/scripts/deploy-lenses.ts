@@ -13,12 +13,16 @@ const apiUrl = process.env['DOTBEP_API_URL'] ?? 'https://app.dotbep.com/api'
 if (!token) throw new Error('DOTBEP_TOKEN is not set in .env')
 if (!bepId) throw new Error('DOTBEP_BEP_ID is not set in .env')
 
-const bundle = await readFile(join(root, 'dist', 'lenses.js'))
+const bundle   = await readFile(join(root, 'dist', 'lenses.js'))
+const manifest = await readFile(join(root, 'dist', 'lenses.manifest.json')).catch(() => null)
 
 console.log(`Deploying lenses to BEP ${bepId}...`)
 
 const form = new FormData()
 form.append('file', new Blob([bundle], { type: 'application/javascript' }), 'lenses.js')
+if (manifest) {
+  form.append('manifest', new Blob([manifest], { type: 'application/json' }), 'lenses.manifest.json')
+}
 
 const res = await fetch(`${apiUrl}/beps/${bepId}/lenses`, {
   method:  'POST',

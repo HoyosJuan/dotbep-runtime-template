@@ -10,7 +10,7 @@ await esbuild.build({
   bundle:      true,
   platform:    'node',
   format:      'cjs',
-  external:    ['@dotbep/core'],
+
   outfile:     join(root, 'dist', 'runtime.cjs'),
   minify:      true,
   logLevel:    'silent',
