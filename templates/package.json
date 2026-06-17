@@ -9,7 +9,7 @@
     "deploy:lenses": "npm run build:lenses && tsx scripts/deploy-lenses.ts"
   },
   "dependencies": {
-    "@dotbep/core": "0.2.17"
+    "@dotbep/core": "0.2.18"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
