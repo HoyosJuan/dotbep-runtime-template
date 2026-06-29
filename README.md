@@ -17,3 +17,21 @@ Then follow the prompts.
 1. Rename `AGENTS.md` to match your AI agent (`CLAUDE.md`, `GEMINI.md`, etc.), or keep it as `AGENTS.md` for Cursor, Windsurf, or Codex CLI.
 2. Copy `.env.example` to `.env` and fill in `DOTBEP_TOKEN` and `DOTBEP_BEP_ID`.
 3. Run `npm install && npm run pull`.
+
+## MCP server
+
+dotbep ships an MCP server that gives your coding agent direct access to your BEP — read data, manage members, and more.
+
+```json
+{
+  "dotbep-mcp": {
+    "command": "npx",
+    "args": ["-y", "@dotbep/mcp@latest"],
+    "env": {
+      "DOTBEP_TOKEN": "<your-token>"
+    }
+  }
+}
+```
+
+Learn how to get your token at [dotbep.com/docs/getting-started.md](https://dotbep.com/docs/getting-started.md).
