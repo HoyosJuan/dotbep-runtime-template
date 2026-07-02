@@ -85,16 +85,16 @@ Implement the handlers in `src/runtime/`, fill in the lens mappings in `src/lens
 ### Handler types
 
 #### Effects
-Triggered from process nodes in a workflow. Receive the active instance and the payload defined in the BEP.
+Triggered from workflow edges. Receive the active instance and the payload defined in the BEP. Fire-and-forget: the engine does not wait for or react to the result, so effects should be used for actions where staleness on failure is acceptable (notifications, logging), never for state that must stay in sync with an external system (see Automations below for that case).
 
 ```typescript
 // src/runtime/effects/notify-reviewer.ts
 import type { WorkflowInstance } from '@dotbep/core'
-import type { BepEffectPayloads } from '../../bep.js'
+import type { BepEffects } from '../../bep.js'
 
 export async function notifyReviewer(
   instance: WorkflowInstance,
-  payload:  BepEffectPayloads['notify-reviewer'],
+  payload:  Parameters<BepEffects['notify-reviewer']>[0],
 ): Promise<void> {
   // this.env is not available here — pass env as a parameter if needed,
   // or keep the logic in index.ts as an inline arrow function.
@@ -109,18 +109,22 @@ this.effect('notify-reviewer', notifyReviewer)
 > If a handler needs `this.env`, define it as an inline arrow function in `index.ts` instead of a separate file.
 
 #### Automations
-Triggered on automatic decision nodes. Must return `{ eventId: string }` matching a valid outgoing transition of the node.
+Triggered on automation nodes — system-executed steps in a workflow. Must return `{ success: true, eventId: string, ...output }` on success, matching a valid outgoing transition of the node, or `{ success: false, error?: string }` on failure. Do not throw for expected failure paths — return `{ success: false, error }` instead so the engine records the attempt; a thrown exception is also caught and recorded as a failure, but returning it explicitly is preferred when the failure is anticipated. The engine tracks failed attempts natively (queryable as `automationPending` on the instance's status) — a following decision node is only needed if the automation's own output carries a genuine business branching need, not to check success or failure.
 
 ```typescript
 // src/runtime/automations/auto-approve.ts
 import type { WorkflowInstance } from '@dotbep/core'
+import type { BepAutomations } from '../../bep.js'
 
 export async function autoApprove(
   instance: WorkflowInstance,
-  _payload: Record<string, never>,
-): Promise<{ eventId: string }> {
-  const approved = await checkSomeCondition(instance.trackedAsset.id)
-  return { eventId: approved ? 'approved' : 'rejected' }
+): Promise<ReturnType<BepAutomations['auto-approve']>> {
+  try {
+    const approved = await checkSomeCondition(instance.trackedAsset.id)
+    return { success: true, eventId: approved ? 'approved' : 'rejected' }
+  } catch (e) {
+    return { success: false, error: (e as Error).message }
+  }
 }
 ```
 
