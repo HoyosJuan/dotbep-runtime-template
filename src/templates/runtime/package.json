@@ -1,0 +1,24 @@
+{
+  "name": "my-runtime",
+  "type": "module",
+  "scripts": {
+    "pull": "dotbep pull",
+    "build:runtime": "dotbep build runtime",
+    "build:lenses": "dotbep build lenses",
+    "deploy:runtime": "dotbep deploy runtime",
+    "deploy:lenses": "dotbep deploy lenses",
+    "dev": "vite --config vite.dev.config.ts"
+  },
+  "dependencies": {
+    "@dotbep/core": "~0.2.0"
+  },
+  "devDependencies": {
+    "@dotbep/cli": "~0.2.0",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.0.0",
+    "lit": "^3.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^6.4.3",
+    "zod": "4.4.3"
+  }
+}

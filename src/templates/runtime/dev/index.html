@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>dotBEP — Lens preview</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="layout">
+    <header class="header">
+      <h1 id="project-name">Loading…</h1>
+      <p class="hint">
+        Local preview harness — mirrors what the platform does when rendering a lens,
+        connected to real remote data. This is a dev-only layer on top of the runtime
+        and lenses code, which stay untouched.
+      </p>
+    </header>
+    <aside class="lenses-pane">
+      <ul id="catalog"></ul>
+    </aside>
+    <main class="preview-pane">
+      <div id="status" class="hint">Select a lens on the left to preview it.</div>
+      <div id="mount"></div>
+    </main>
+  </div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

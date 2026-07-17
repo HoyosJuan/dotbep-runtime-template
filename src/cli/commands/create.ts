@@ -1,17 +1,14 @@
-#!/usr/bin/env node
 import * as p from '@clack/prompts'
 import {
   copyFileSync, mkdirSync, readdirSync,
   statSync, existsSync, renameSync,
 } from 'node:fs'
 import { join, dirname, resolve, basename } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { scaffoldDir } from '../../lib/paths.js'
 
-const __dirname   = dirname(fileURLToPath(import.meta.url))
-const templateDir = join(__dirname, '..', 'templates')
 const isInteractive = process.stdin.isTTY
 
-async function main() {
+export async function create(): Promise<void> {
   if (isInteractive) {
     await interactiveMode()
   } else {
@@ -20,7 +17,7 @@ async function main() {
 }
 
 async function interactiveMode() {
-  p.intro('create-dotbep-runtime')
+  p.intro('dotbep create')
 
   const useCurrentDir = await p.confirm({
     message:      `Scaffold in current directory? (${basename(resolve('.'))})`,
@@ -85,7 +82,7 @@ async function silentMode() {
   const outDir      = resolve('.')
   const projectName = basename(outDir)
   scaffold(outDir)
-  console.log(`create-dotbep-runtime: scaffolded "${projectName}"`)
+  console.log(`dotbep create: scaffolded "${projectName}"`)
   console.log('Next steps:')
   console.log('  mv AGENTS.md CLAUDE.md        # or whichever applies')
   console.log('  cp .env.example .env')
@@ -95,7 +92,7 @@ async function silentMode() {
 }
 
 function scaffold(outDir: string): void {
-  copyDir(templateDir, outDir)
+  copyDir(scaffoldDir, outDir)
   const tmp = join(outDir, '_gitignore')
   if (existsSync(tmp)) renameSync(tmp, join(outDir, '.gitignore'))
 }
@@ -113,5 +110,3 @@ function copyDir(src: string, dest: string): void {
     }
   }
 }
-
-main().catch((e) => { console.error(e); process.exit(1) })
