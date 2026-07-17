@@ -5,7 +5,7 @@ Scaffold and manage a runtime project for a [dotbep](https://github.com/HoyosJua
 ## Scaffold a new runtime
 
 ```bash
-npx @dotbep/cli create
+npx @dotbep/cli@latest create
 ```
 
 Then follow the prompts.
